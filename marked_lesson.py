@@ -1,27 +1,28 @@
 import requests
 import config
 
-cookies = {
-    'MoodleSession': config.MOODLE_SESSION,
+
+USERS = {
+    "user1": config.MOODLE_SESSION,
+    "user2": config.MOODLE_SESSION,
 }
 
-headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:155.0) Gecko/20100101 Firefox/155.0',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    'Accept-Language': 'en-US,en;q=0.9',
-    'Connection': 'keep-alive',
-    'Upgrade-Insecure-Requests': '1',
-    'Sec-Fetch-Dest': 'document',
-    'Sec-Fetch-Mode': 'navigate',
-    'Sec-Fetch-Site': 'none',
-    'Sec-Fetch-User': '?1',
-    'Sec-GPC': '1',
-    'Priority': 'u=0, i',
-}
+def mark_lesson(users, qrpass, sessid):
+    for user in users:
+        cookies = {
+            'MoodleSession': USERS[user],
+        }
 
-params = {
-    'qrpass': 'fdsd1c',
-    'sessid': '39645',
-}
+        params = {
+            'qrpass': qrpass,
+            'sessid': sessid,
+        }
 
-response = requests.get('https://lms.sfedu.ru/mod/attendance/attendance.php', params=params, cookies=cookies, headers=headers)
+        response = requests.get('https://lms.sfedu.ru/mod/attendance/attendance.php', params=params, cookies=cookies)
+        if response.status_code == 200:
+            print(f"Lesson marked for {user}")
+        else:
+            print(f"Failed to mark lesson for {user}")
+
+if __name__ == "__main__":
+    mark_lesson(USERS, "fdsd1c", "39645")

@@ -25,5 +25,9 @@ def get_schedule(start_date: str, end_date: str, attendee_person_id: str = ATTEN
         raise Exception(f"Failed to get schedule: {response.status_code}")
     return response.json()
 
-schedule = get_schedule('2026-09-13', '2026-09-20')
-Events.nice_print_events(Events.parse_events(schedule))
+if __name__ == "__main__":
+    from datetime import timedelta
+    start_date = datetime.now().strftime('%Y-%m-%d')
+    end_date = (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')
+    schedule = get_schedule(start_date, end_date, "117335b8-894c-42e9-bb67-5acd915a77ec")
+    Events.nice_print_events(Events.parse_events(schedule))

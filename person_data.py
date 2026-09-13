@@ -142,6 +142,9 @@ def parse_persons(data: dict) -> list[Person]:
 
 
 def nice_print_persons(persons: list[Person]) -> None:
+    print("=" * 40)
+    print(f"Всего: {len(persons)}")
+    print("=" * 40)
     for person in persons:
         print(f"attendee_person_id: {person.attendee_person_id}")
         print(f"Фамилия: {person.фамилия}")

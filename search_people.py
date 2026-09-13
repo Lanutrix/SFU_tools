@@ -37,9 +37,9 @@ def search_people(name: str, last_name: str = '', year: str = '', speciality: st
     return persons
 
 people = search_people(
-    name='Валерия',
+    name='Дмитрий',
     last_name='',
     year=2024,
-    speciality='без'
+    speciality='системы'
 )
 person_data.nice_print_persons(people)
