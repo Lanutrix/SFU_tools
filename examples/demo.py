@@ -2,10 +2,10 @@
 
 from datetime import datetime, timedelta
 
-from lms_sfu.modeus import get_schedule, search_people
-from lms_sfu.moodle import mark_lesson
-from lms_sfu.parsers import format_events, format_persons
 from lms_sfu import config
+from lms_sfu.modeus import get_schedule, search_people
+from lms_sfu.moodle import mark_lesson, parse_attendance_url
+from lms_sfu.parsers import format_events, format_persons
 
 
 def demo_schedule() -> None:
@@ -20,11 +20,35 @@ def demo_people() -> None:
     print(format_persons(people))
 
 
-def demo_attendance(qrpass: str, sessid: str) -> None:
+def _print_mark_result(result) -> None:
+    print(f"status: {result.status_code}")
+    print(f"final_url: {result.final_url}")
+    if result.redirects:
+        print("redirects:")
+        for step in result.redirects:
+            print(f"  {step}")
+    print(f"body[:100]: {result.body_preview!r}")
+    if result.error:
+        print(f"error: {result.error}")
+    print("ok" if result.ok else "failed")
+
+
+def demo_attendance(source: str | None = None) -> None:
     if not config.MOODLE_SESSION:
         raise ValueError("MOODLE_SESSION is not set")
-    ok = mark_lesson(config.MOODLE_SESSION, qrpass, sessid)
-    print("ok" if ok else "failed")
+
+    if source is None:
+        source = input("Вставь ссылку attendance: ").strip()
+
+    try:
+        qrpass, sessid = parse_attendance_url(source)
+    except ValueError as exc:
+        print(f"Ошибка: {exc}")
+        raise SystemExit(1) from exc
+
+    print(f"qrpass={qrpass!r} sessid={sessid!r}")
+    result = mark_lesson(config.MOODLE_SESSION, qrpass, sessid)
+    _print_mark_result(result)
 
 
 if __name__ == "__main__":
@@ -36,7 +60,11 @@ if __name__ == "__main__":
     elif command == "people":
         demo_people()
     elif command == "attendance":
-        demo_attendance(sys.argv[2], sys.argv[3])
+        link = sys.argv[2] if len(sys.argv) > 2 else None
+        demo_attendance(link)
     else:
-        print("Usage: python -m examples.demo [schedule|people|attendance qr sessid]")
+        print(
+            "Usage: python -m examples.demo "
+            "[schedule|people|attendance [url]]"
+        )
         raise SystemExit(1)

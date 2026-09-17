@@ -35,7 +35,8 @@ MOODLE_SESSION=
 ```bash
 python -m examples.demo schedule
 python -m examples.demo people
-python -m examples.demo attendance <qrpass> <sessid>
+python -m examples.demo attendance
+python -m examples.demo attendance "https://lms.sfedu.ru/mod/attendance/attendance.php?qrpass=...&sessid=..."
 ```
 
 ## Использование в коде
